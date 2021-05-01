@@ -1,0 +1,6 @@
+# ignore a single file
+
+# ignore an entire directory
+/.vscode/
+/.idea/
+/images/
