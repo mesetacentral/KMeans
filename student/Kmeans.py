@@ -63,7 +63,7 @@ class KMeans:
         if not 'tolerance' in options:
             options['tolerance'] = 0
         if not 'max_iter' in options:
-            options['max_iter'] = np.inf
+            options['max_iter'] = 100 # np.Inf
         if not 'fitting' in options:
             options['fitting'] = 'WCD'  # within class distance.
         if not 'seed' in options:
@@ -147,12 +147,12 @@ class KMeans:
 
         self.old_centroids = np.copy(self.centroids) # has to be copied not assigned, otherwise they get linked
 
-        self.centroids = np.array([np.sum(self.X[self.labels == 0], axis=0) / np.count_nonzero(self.labels == 0)])
-        # self.centroids = np.empty(shape=(self.K, self.X.shape[1]))
+        # self.centroids = np.array([np.sum(self.X[self.labels == 0], axis=0) / np.count_nonzero(self.labels == 0)])
+        self.centroids = np.empty(shape=(self.K, self.X.shape[1]))
 
-        for k in range(1, self.K):
-            self.centroids = np.append(self.centroids, [self.X.mean(axis = 0, where=np.tile(np.array([self.labels == k]).transpose(), (1, self.X.shape[1])))], axis=0)
-            # self.centroids[k] = self.X.mean(axis = 0, where=np.tile(np.array([self.labels == k]).transpose(), (1, self.X.shape[1])))
+        for k in range(0, self.K):
+            # self.centroids = np.append(self.centroids, [self.X.mean(axis = 0, where=np.tile(np.array([self.labels == k]).transpose(), (1, self.X.shape[1])))], axis=0)
+            self.centroids[k] = self.X.mean(axis = 0, where=np.tile(np.array([self.labels == k]).transpose(), (1, self.X.shape[1])))
             # self.centroids[k] = np.sum(self.X[self.labels == k], axis=0) / np.count_nonzero(self.labels == k)
 
     def converges(self):
@@ -177,14 +177,17 @@ class KMeans:
         #  AND CHANGE FOR YOUR OWN CODE
         #######################################################
         self._init_centroids()
+        self.get_labels()
 
         iterations = 0
         while iterations < self.options['max_iter']:
-            self.get_labels()
             self.get_centroids()
-            iterations += 1
+
             if self.converges():
                 break
+            self.get_labels()
+            
+            iterations += 1
 
     def whitinClassDistance(self): # withinClassDistance
         """
